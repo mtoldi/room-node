@@ -1,0 +1,41 @@
+menu "RoomNode"
+
+    config ROOMNODE_I2C_SDA
+        int "I2C SDA GPIO"
+        default 21
+        help
+            SDA pin of the easyC connector. IO21 on the Dasduino ConnectPlus.
+
+    config ROOMNODE_I2C_SCL
+        int "I2C SCL GPIO"
+        default 22
+        help
+            SCL pin of the easyC connector. IO22 on the Dasduino ConnectPlus.
+
+    config ROOMNODE_POT_GPIO
+        int "Setpoint potentiometer GPIO (ADC1 only)"
+        default 34
+        help
+            Wiper (OUTA) of the slider potentiometer. Must be an ADC1 pin
+            (GPIO32-39) because ADC2 is unavailable while Wi-Fi is running.
+            Power the potentiometer from 3V3, never from 5 V.
+
+    config ROOMNODE_LED_GPIO
+        int "WS2812B stick data GPIO"
+        default 27
+        help
+            DIN of the Smart LED WS2812B Stick10.
+
+    config ROOMNODE_LED_COUNT
+        int "Number of LEDs on the stick"
+        default 10
+
+    config ROOMNODE_DEMO
+        bool "Demo mode"
+        default n
+        help
+            Shortens the minimum on/off time from 5 min to 10 s and regulates on
+            a simulated room temperature, so the control loop can be watched
+            within minutes. Enabled by sdkconfig.defaults.demo.
+
+endmenu

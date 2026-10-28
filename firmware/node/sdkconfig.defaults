@@ -1,0 +1,9 @@
+CONFIG_IDF_TARGET="esp32"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_FREERTOS_HZ=1000
+
+# A task that stops feeding the watchdog resets the node; the heating output
+# starts in the safe (off) state after reset.
+CONFIG_ESP_TASK_WDT_EN=y
+CONFIG_ESP_TASK_WDT_PANIC=y
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=5
