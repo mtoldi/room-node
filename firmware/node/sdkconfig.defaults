@@ -2,6 +2,9 @@ CONFIG_IDF_TARGET="esp32"
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
 CONFIG_FREERTOS_HZ=1000
 
+# 1.5 MB app partition: Wi-Fi, TLS, MQTT, Modbus and BACnet do not fit in 1 MB
+CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE=y
+
 # A task that stops feeding the watchdog resets the node; the heating output
 # starts in the safe (off) state after reset.
 CONFIG_ESP_TASK_WDT_EN=y
