@@ -5,7 +5,7 @@
 
 Open-source room controller for building automation: an ESP32 node that measures room climate, runs a thermostat with BACnet-style command priorities and exposes its data over BACnet/IP, Modbus TCP, MQTT and HTTPS.
 
-> Work in progress. Implemented so far: sensor drivers, FreeRTOS tasks, the controller (`roomcore`) with its host-side module tests, setpoint slider, LED indicator, Wi-Fi and MQTT. Next: Modbus TCP, BACnet/IP.
+> Work in progress. Implemented so far: sensor drivers, FreeRTOS tasks, the controller (`roomcore`) with its host-side module tests, setpoint slider, LED indicator, Wi-Fi, MQTT, Modbus TCP and hardware-in-the-loop system tests. Next: BACnet/IP.
 
 ## Hardware
 
@@ -35,6 +35,7 @@ So frost protection and the fail-safe override the minimum on/off time, while th
 
 ## Interfaces
 
+- **Modbus TCP**: own server implementation (port 502, FC03/04/06/16, proper exception responses). Register map in [docs/points.md](docs/points.md).
 - **MQTT**: retained state JSON, online/offline Last Will, setpoint and mode commands. See [docs/mqtt.md](docs/mqtt.md).
 
 ## Build and flash
