@@ -1,0 +1,23 @@
+# ESP-IDF
+build/
+build-*/
+sdkconfig
+sdkconfig.old
+managed_components/
+
+# Secrets (Wi-Fi, MQTT, API key)
+sdkconfig.defaults.local
+
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+report*.html
+
+# Node / Cloudflare
+node_modules/
+.wrangler/
+
+# Editors
+.vscode/
+.idea/
