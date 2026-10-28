@@ -5,31 +5,10 @@ import json
 
 import pytest
 
+from conftest import Points, points
+
 AUTO, OFF, ON = 0, 1, 2
 INVALID, VALUE, RELINQUISH = 0, 1, 2
-
-
-class Points(ctypes.Structure):
-    _fields_ = [
-        ("t_ref", ctypes.c_float),
-        ("t_ref_valid", ctypes.c_bool),
-        ("t_aux", ctypes.c_float),
-        ("t_aux_valid", ctypes.c_bool),
-        ("rh", ctypes.c_float),
-        ("setpoint", ctypes.c_float),
-        ("heating", ctypes.c_bool),
-        ("priority", ctypes.c_int),
-        ("mode", ctypes.c_int),
-        ("status", ctypes.c_uint16),
-        ("uptime_s", ctypes.c_uint32),
-    ]
-
-
-def points(**kw):
-    values = dict(t_ref=21.84, t_ref_valid=True, t_aux=22.1, t_aux_valid=True, rh=47.2,
-                  setpoint=22.0, heating=True, priority=16, mode=AUTO, status=0, uptime_s=86400)
-    values.update(kw)
-    return Points(**values)
 
 
 @pytest.fixture
