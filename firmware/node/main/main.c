@@ -6,12 +6,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "heating_actuator.h"
+#include "esp_event.h"
 #include "led_bar.h"
+#include "mqtt_task.h"
+#include "nvs_flash.h"
 #include "room_state.h"
 #include "sensor_task.h"
 #include "setpoint_pot.h"
 #include "shtc3.h"
 #include "tmp117.h"
+#include "wifi.h"
 
 #define I2C_PROBE_TIMEOUT_MS 20
 #define PRINT_PERIOD_MS      1000
@@ -95,6 +99,18 @@ void app_main(void)
     ESP_ERROR_CHECK(setpoint_pot_init(CONFIG_ROOMNODE_POT_GPIO));
     ESP_ERROR_CHECK(led_bar_init(CONFIG_ROOMNODE_LED_GPIO, CONFIG_ROOMNODE_LED_COUNT));
     control_task_start(sim_actuator_get());
+
+    // Network last: the room is controlled locally whether or not it comes up
+    esp_err_t err = nvs_flash_init(); // Wi-Fi driver keeps calibration data here
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    if (wifi_start())
+        mqtt_task_start();
 
     room_state_t state;
     for (;;)

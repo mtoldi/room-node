@@ -38,4 +38,36 @@ menu "RoomNode"
             a simulated room temperature, so the control loop can be watched
             within minutes. Enabled by sdkconfig.defaults.demo.
 
+    menu "Network"
+
+        config ROOMNODE_ID
+            string "Node ID"
+            default "node1"
+            help
+                Used in MQTT topics (roomnode/<id>/...) and the DHCP host name.
+
+        config ROOMNODE_WIFI_SSID
+            string "Wi-Fi SSID (2.4 GHz)"
+            default ""
+            help
+                Leave empty to run without network.
+
+        config ROOMNODE_WIFI_PASSWORD
+            string "Wi-Fi password"
+            default ""
+
+        config ROOMNODE_MQTT_URI
+            string "MQTT broker URI"
+            default "mqtt://192.168.1.100:1883"
+
+        config ROOMNODE_MQTT_USERNAME
+            string "MQTT username"
+            default ""
+
+        config ROOMNODE_MQTT_PASSWORD
+            string "MQTT password"
+            default ""
+
+    endmenu
+
 endmenu

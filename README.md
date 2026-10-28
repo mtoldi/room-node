@@ -5,7 +5,7 @@
 
 Open-source room controller for building automation: an ESP32 node that measures room climate, runs a thermostat with BACnet-style command priorities and exposes its data over BACnet/IP, Modbus TCP, MQTT and HTTPS.
 
-> Work in progress. Implemented so far: sensor drivers, FreeRTOS tasks, the controller (`roomcore`) with its host-side module tests, setpoint slider and LED indicator. Next: MQTT, Modbus TCP, BACnet/IP.
+> Work in progress. Implemented so far: sensor drivers, FreeRTOS tasks, the controller (`roomcore`) with its host-side module tests, setpoint slider, LED indicator, Wi-Fi and MQTT. Next: Modbus TCP, BACnet/IP.
 
 ## Hardware
 
@@ -33,9 +33,15 @@ The heating output is a commandable point with a BACnet priority array: the high
 
 So frost protection and the fail-safe override the minimum on/off time, while the operator and the thermostat cannot. The setpoint is commandable too: its relinquish default follows the slider, a remote write at priority 8 overrides it, and moving the slider by more than 0.3 °C hands control back to the room.
 
+## Interfaces
+
+- **MQTT**: retained state JSON, online/offline Last Will, setpoint and mode commands. See [docs/mqtt.md](docs/mqtt.md).
+
 ## Build and flash
 
 Requires [ESP-IDF](https://docs.espressif.com/projects/esp-idf/) v6.0.3. ESP-IDF does not support spaces in paths, so keep both ESP-IDF and this repository in a path without spaces.
+
+Network settings (Wi-Fi, MQTT broker, node ID) are read from `firmware/node/sdkconfig.defaults.local`, which is not committed. Copy `sdkconfig.defaults.local.example` and fill it in; without it the node runs offline.
 
 ```sh
 cd firmware/node

@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "points.h"
 #include "roomcore.h"
 
 // Latest sensor values. A value is kept when a read fails; *_ok tells whether
@@ -43,6 +44,12 @@ void room_state_init(uint32_t min_switch_ms, bool simulation);
 void room_state_set_sensors(const sensor_data_t *sensors);
 void room_state_control_step(int pot_mv, uint32_t now_ms);
 void room_state_get(room_state_t *out);
+
+// Network layer reports its connection; while offline the MQTT status bit is set.
+void room_state_set_mqtt_online(bool online);
+
+// Protocol-neutral view of a snapshot, shared by MQTT, Modbus and BACnet.
+void room_state_points(const room_state_t *s, rc_points_t *out);
 
 rc_result_t room_state_write_setpoint(float celsius);
 void room_state_relinquish_setpoint(void);

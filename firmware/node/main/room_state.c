@@ -7,6 +7,7 @@
 static SemaphoreHandle_t s_mutex;
 static sensor_data_t s_sensors;
 static rc_t s_rc;
+static bool s_mqtt_online;
 
 static void lock(void)
 {
@@ -64,10 +65,34 @@ void room_state_get(room_state_t *out)
         .heating = rc_heating(&s_rc),
         .heating_priority = rc_heating_priority(&s_rc),
         .mode = rc_mode(&s_rc),
-        .status = rc_status(&s_rc),
+        .status = rc_status(&s_rc) | (s_mqtt_online ? 0 : RC_STATUS_MQTT_OFFLINE),
     };
     unlock();
     out->uptime_s = (uint32_t)(esp_timer_get_time() / 1000000);
+}
+
+void room_state_set_mqtt_online(bool online)
+{
+    lock();
+    s_mqtt_online = online;
+    unlock();
+}
+
+void room_state_points(const room_state_t *s, rc_points_t *out)
+{
+    *out = (rc_points_t){
+        .t_ref = s->t_ref,
+        .t_ref_valid = s->t_ref_valid,
+        .t_aux = s->sensors.t_aux,
+        .t_aux_valid = valid(s->sensors.shtc3_errors, s->sensors.samples, s->sensors.shtc3_fault),
+        .rh = s->sensors.rh,
+        .setpoint = s->setpoint,
+        .heating = s->heating,
+        .priority = s->heating_priority,
+        .mode = s->mode,
+        .status = s->status,
+        .uptime_s = s->uptime_s,
+    };
 }
 
 rc_result_t room_state_write_setpoint(float celsius)

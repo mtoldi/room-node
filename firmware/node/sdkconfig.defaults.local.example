@@ -1,0 +1,10 @@
+# Copy to sdkconfig.defaults.local (not committed) and fill in.
+# Defaults are applied only when sdkconfig is created: after editing, delete
+# sdkconfig (and build-demo/sdkconfig) or change the values in idf.py menuconfig.
+
+CONFIG_ROOMNODE_ID="node1"
+CONFIG_ROOMNODE_WIFI_SSID="your-2.4GHz-network"
+CONFIG_ROOMNODE_WIFI_PASSWORD="your-password"
+CONFIG_ROOMNODE_MQTT_URI="mqtt://192.168.1.100:1883"
+CONFIG_ROOMNODE_MQTT_USERNAME=""
+CONFIG_ROOMNODE_MQTT_PASSWORD=""
