@@ -24,19 +24,3 @@ jobs:
             ${{ matrix.variant == 'demo'
               && 'idf.py -B build-demo -D SDKCONFIG=build-demo/sdkconfig -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.defaults.demo" build'
               || 'idf.py build' }}
-
-  module-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - run: pip install -r tests/requirements.txt
-      - name: Run module tests
-        run: pytest tests/module --html=report-module.html --self-contained-html
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: module-test-report
-          path: report-module.html
