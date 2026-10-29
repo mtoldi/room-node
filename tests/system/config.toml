@@ -4,6 +4,12 @@
 host = "192.168.18.12"
 id = "node1"
 
+[bacnet]
+device = 1001
+# This PC's address on the node's subnet, with prefix length. BACnet/IP needs
+# it to bind the UDP socket and to compute the broadcast address.
+local_address = "192.168.18.8/24"
+
 [broker]
 host = "localhost"
 port = 1883

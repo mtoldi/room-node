@@ -5,7 +5,7 @@
 
 Open-source room controller for building automation: an ESP32 node that measures room climate, runs a thermostat with BACnet-style command priorities and exposes its data over BACnet/IP, Modbus TCP, MQTT and HTTPS.
 
-> Work in progress. Implemented so far: sensor drivers, FreeRTOS tasks, the controller (`roomcore`) with its host-side module tests, setpoint slider, LED indicator, Wi-Fi, MQTT, Modbus TCP and hardware-in-the-loop system tests. Next: BACnet/IP.
+> Work in progress. Implemented so far: sensor drivers, FreeRTOS tasks, the controller (`roomcore`) with its host-side module tests, setpoint slider, LED indicator, Wi-Fi, MQTT, Modbus TCP, BACnet/IP and hardware-in-the-loop system tests. Next: HTTPS to the cloud and the e-paper wall panel.
 
 ## Hardware
 
@@ -35,12 +35,13 @@ So frost protection and the fail-safe override the minimum on/off time, while th
 
 ## Interfaces
 
+- **BACnet/IP**: device with AI, AV, BO and MSV objects; the setpoint and heating output expose the controller's real priority arrays, and remote writes are limited to priority 8. Encoding, services and BVLC come from [bacnet-stack](https://github.com/bacnet-stack/bacnet-stack); the Device object, the room objects and the UDP datalink for ESP-IDF are implemented here. See [docs/points.md](docs/points.md).
 - **Modbus TCP**: own server implementation (port 502, FC03/04/06/16, proper exception responses). Register map in [docs/points.md](docs/points.md).
 - **MQTT**: retained state JSON, online/offline Last Will, setpoint and mode commands. See [docs/mqtt.md](docs/mqtt.md).
 
 ## Build and flash
 
-Requires [ESP-IDF](https://docs.espressif.com/projects/esp-idf/) v6.0.3. ESP-IDF does not support spaces in paths, so keep both ESP-IDF and this repository in a path without spaces.
+Requires [ESP-IDF](https://docs.espressif.com/projects/esp-idf/) v6.0.3. ESP-IDF does not support spaces in paths, so keep both ESP-IDF and this repository in a path without spaces. bacnet-stack is a git submodule: clone with `git clone --recursive`, or run `git submodule update --init` afterwards.
 
 Network settings (Wi-Fi, MQTT broker, node ID) are read from `firmware/node/sdkconfig.defaults.local`, which is not committed. Copy `sdkconfig.defaults.local.example` and fill it in; without it the node runs offline.
 
@@ -76,4 +77,4 @@ python -m venv .venv && .venv/bin/pip install -r tests/requirements.txt   # Wind
 
 ## License
 
-MIT
+MIT. The bacnet-stack submodule is GPL-2.0 with the GCC runtime library exception, which allows linking it into firmware under other licenses.

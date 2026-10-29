@@ -1,6 +1,7 @@
 """Hardware-in-the-loop system tests: they talk to a real node over the
 network. Not run in CI. Settings are in config.toml."""
 
+import asyncio
 import json
 import queue
 import time
@@ -10,6 +11,11 @@ from pathlib import Path
 
 import paho.mqtt.client as mqtt
 import pytest
+from bacpypes3.apdu import ErrorRejectAbortNack
+from bacpypes3.app import Application
+from bacpypes3.argparse import SimpleArgumentParser
+from bacpypes3.pdu import Address
+from bacpypes3.primitivedata import ObjectIdentifier
 from pymodbus.client import ModbusTcpClient
 
 CONFIG = tomllib.loads((Path(__file__).parent / "config.toml").read_text())
@@ -77,6 +83,52 @@ class Modbus:
         self.client.close()
 
 
+class Bacnet:
+    """Synchronous wrapper around a bacpypes3 client. Calls run on a private
+    event loop; between calls the OS buffers incoming datagrams."""
+
+    def __init__(self):
+        self.loop = asyncio.new_event_loop()
+        args = SimpleArgumentParser().parse_args(
+            ["--address", CONFIG["bacnet"]["local_address"], "--instance", "999999", "--name", "pytest"])
+        self.app = self.loop.run_until_complete(self._create(args))
+        self.device = CONFIG["bacnet"]["device"]
+        self.node = Address(CONFIG["node"]["host"])
+
+    @staticmethod
+    async def _create(args):
+        return Application.from_args(args)
+
+    def run(self, coro):
+        return self.loop.run_until_complete(coro)
+
+    def who_is(self, low=None, high=None):
+        # who_is() schedules its request immediately, so it needs a running loop
+        async def request():
+            return await self.app.who_is(low, high, timeout=3)
+
+        return self.run(request())
+
+    def read(self, obj, prop, index=None):
+        return self.run(self.app.read_property(self.node, ObjectIdentifier(obj), prop, index))
+
+    def read_multiple(self, spec):
+        return self.run(self.app.read_property_multiple(self.node, spec))
+
+    def write(self, obj, prop, value, priority=None):
+        """Returns None on success, or the error reason as text."""
+        try:
+            self.run(self.app.write_property(self.node, ObjectIdentifier(obj), prop, value, priority=priority))
+            return None
+        except ErrorRejectAbortNack as e:
+            return str(e)
+
+    def close(self):
+        self.app.close()
+        self.loop.run_until_complete(asyncio.sleep(0.1))
+        self.loop.close()
+
+
 def s16(value):
     return value - 0x10000 if value & 0x8000 else value
 
@@ -91,6 +143,14 @@ def modbus():
 @pytest.fixture
 def broker():
     client = Mqtt()
+    yield client
+    client.close()
+
+
+@pytest.fixture(scope="session")
+def bacnet():
+    """One client for the session: it binds UDP 47808 on this PC."""
+    client = Bacnet()
     yield client
     client.close()
 
