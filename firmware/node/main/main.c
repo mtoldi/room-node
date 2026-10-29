@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "bacnet_task.h"
 #include "control_task.h"
 #include "driver/i2c_master.h"
 #include "esp_event.h"
@@ -114,6 +115,7 @@ void app_main(void)
     {
         mqtt_task_start();
         modbus_task_start();
+        bacnet_task_start(MIN_SWITCH_MS);
     }
 
     room_state_t state;

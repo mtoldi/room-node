@@ -53,9 +53,9 @@ void room_state_control_step(int pot_mv, uint32_t now_ms)
     unlock();
 }
 
-void room_state_get(room_state_t *out)
+// Caller holds the mutex
+static void snapshot(room_state_t *out)
 {
-    lock();
     *out = (room_state_t){
         .sensors = s_sensors,
         .t_ref = rc_t_ref(&s_rc),
@@ -66,9 +66,24 @@ void room_state_get(room_state_t *out)
         .heating_priority = rc_heating_priority(&s_rc),
         .mode = rc_mode(&s_rc),
         .status = rc_status(&s_rc) | (s_mqtt_online ? 0 : RC_STATUS_MQTT_OFFLINE),
+        .uptime_s = (uint32_t)(esp_timer_get_time() / 1000000),
     };
+}
+
+void room_state_get(room_state_t *out)
+{
+    lock();
+    snapshot(out);
     unlock();
-    out->uptime_s = (uint32_t)(esp_timer_get_time() / 1000000);
+}
+
+void room_state_get_commandable(room_state_t *out, priority_array_t *heating, priority_array_t *setpoint)
+{
+    lock();
+    snapshot(out);
+    *heating = s_rc.heating;
+    *setpoint = s_rc.setpoint;
+    unlock();
 }
 
 void room_state_set_mqtt_online(bool online)

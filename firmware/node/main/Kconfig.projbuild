@@ -46,6 +46,13 @@ menu "RoomNode"
             help
                 Used in MQTT topics (roomnode/<id>/...) and the DHCP host name.
 
+        config ROOMNODE_BACNET_INSTANCE
+            int "BACnet device instance"
+            range 0 4194302
+            default 1001
+            help
+                Must be unique on the BACnet internetwork.
+
         config ROOMNODE_WIFI_SSID
             string "Wi-Fi SSID (2.4 GHz)"
             default ""

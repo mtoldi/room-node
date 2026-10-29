@@ -45,6 +45,9 @@ void room_state_set_sensors(const sensor_data_t *sensors);
 void room_state_control_step(int pot_mv, uint32_t now_ms);
 void room_state_get(room_state_t *out);
 
+// Snapshot plus both priority arrays, taken atomically (for BACnet)
+void room_state_get_commandable(room_state_t *out, priority_array_t *heating, priority_array_t *setpoint);
+
 // Network layer reports its connection; while offline the MQTT status bit is set.
 void room_state_set_mqtt_online(bool online);
 
