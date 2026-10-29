@@ -72,9 +72,12 @@ def test_st03_bacnet_setpoint_reaches_all_protocols(bacnet, modbus, broker):
 def test_st03_bacnet_mode_drives_heating_priority(bacnet, modbus, min_switch_s):
     assert bacnet.write("multi-state-value,1", "present-value", 3) is None  # On
     assert modbus.holding()[1] == 2
+    # Up to one minimum off time until the output may switch on, then the new
+    # state is latched at priority 6 for one minimum on time before 8 shows
+    wait_until(lambda: str(bacnet.read("binary-output,1", "present-value")) == "active",
+               timeout=min_switch_s + 5)
     wait_until(lambda: choice(bacnet.read("binary-output,1", "current-command-priority")) == 8,
                timeout=min_switch_s + 5)
-    assert str(bacnet.read("binary-output,1", "present-value")) == "active"
     assert str(choice(bacnet.read("binary-output,1", "priority-array", 8))) == "1"  # active
     assert bacnet.read("binary-output,1", "minimum-on-time") == min_switch_s
 
