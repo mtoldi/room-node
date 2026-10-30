@@ -30,6 +30,13 @@ menu "RoomNode"
         int "Number of LEDs on the stick"
         default 10
 
+    config ROOMNODE_LED_MIRRORED
+        bool "LED stick mounted mirrored"
+        default y
+        help
+            Fills the stick from the LED farthest from DIN, so it follows the
+            slider when the stick sits the other way round in the enclosure.
+
     config ROOMNODE_DEMO
         bool "Demo mode"
         default n

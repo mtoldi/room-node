@@ -31,6 +31,8 @@ Connect to the **DIN** side of the stick (DOUT is for chaining).
 | GND | GND | Common ground is required |
 | DIN | IO27 | Not a strapping pin, not used by I²C or the on-board RGB LED (IO32) |
 
+In the enclosure the stick is mounted mirrored, so the firmware fills it from the LED farthest from DIN to follow the slider. Turn off `CONFIG_ROOMNODE_LED_MIRRORED` for a stick mounted the other way round.
+
 The data line is driven at 3.3 V while the stick runs at 5 V, slightly below the WS2812B input-high threshold. With short wires this works in practice; if the LEDs flicker, add a level shifter. The firmware limits brightness to about 20 % to keep the current well within USB limits.
 
 ## Pins in use

@@ -30,6 +30,12 @@
 #define SIMULATION    false
 #endif
 
+#if CONFIG_ROOMNODE_LED_MIRRORED
+#define LED_MIRRORED true
+#else
+#define LED_MIRRORED false
+#endif
+
 static const char *TAG = "roomnode";
 
 static i2c_master_bus_handle_t i2c_init(void)
@@ -99,7 +105,7 @@ void app_main(void)
     sensor_task_start(bus);
 
     ESP_ERROR_CHECK(setpoint_pot_init(CONFIG_ROOMNODE_POT_GPIO));
-    ESP_ERROR_CHECK(led_bar_init(CONFIG_ROOMNODE_LED_GPIO, CONFIG_ROOMNODE_LED_COUNT));
+    ESP_ERROR_CHECK(led_bar_init(CONFIG_ROOMNODE_LED_GPIO, CONFIG_ROOMNODE_LED_COUNT, LED_MIRRORED));
     control_task_start(sim_actuator_get());
 
     // Network last: the room is controlled locally whether or not it comes up

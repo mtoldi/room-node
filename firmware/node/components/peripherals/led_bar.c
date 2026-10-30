@@ -4,9 +4,11 @@
 
 static led_strip_handle_t s_strip;
 static int s_count;
+static bool s_mirrored;
 
-esp_err_t led_bar_init(int gpio, int count)
+esp_err_t led_bar_init(int gpio, int count, bool mirrored)
 {
+    s_mirrored = mirrored;
     led_strip_config_t strip_cfg = {
         .strip_gpio_num = gpio,
         .max_leds = count,
@@ -38,7 +40,7 @@ static uint8_t dim(uint8_t c)
 void led_bar_set(int index, uint8_t r, uint8_t g, uint8_t b)
 {
     if (index >= 0 && index < s_count)
-        led_strip_set_pixel(s_strip, index, dim(r), dim(g), dim(b));
+        led_strip_set_pixel(s_strip, s_mirrored ? s_count - 1 - index : index, dim(r), dim(g), dim(b));
 }
 
 void led_bar_clear(void)
