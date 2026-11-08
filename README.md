@@ -6,6 +6,8 @@
 
 A small but faithful building-automation room controller: an ESP32 node that measures room climate, runs a thermostat with BACnet command priorities and safety rules, and exposes its data over **BACnet/IP**, **Modbus TCP** and **MQTT**.
 
+![RoomNode in its 3D-printed enclosure: the LED stick shows the heating state, the slider sets the setpoint](docs/images/roomnode.jpg)
+
 ## Highlights
 
 - **Embedded C on ESP-IDF and FreeRTOS**: one task per concern (sensors, control, BACnet, Modbus, MQTT), shared state behind a mutex, task watchdog.
@@ -74,6 +76,7 @@ The [test plan](docs/test-plan.md) lists the requirements, every test with its e
 | Soldered SHTC3 breakout | Auxiliary temperature and humidity, I²C 0x70 |
 | Soldered slider potentiometer | Local setpoint, 16–26 °C |
 | Soldered Smart LED WS2812B Stick10 | Heating output indicator (stands in for a relay or valve) |
+| 3D-printed enclosure | Front panel with the LED stick and the slider; the stick is mounted mirrored (see wiring) |
 
 Connections are in [docs/wiring.md](docs/wiring.md). No soldering beyond pin headers is needed.
 
@@ -126,12 +129,16 @@ docs/                   points, MQTT, wiring, test plan, reports
 - **Own sensor drivers.** The stock TMP117 library returns 0 °C on an I²C error, which passes any plausibility check, and rewrites the sensor's EEPROM on every boot. The TMP117 is now read register by register with every transfer checked and the device ID verified. The SHTC3 measures without clock stretching: in normal mode the sensor would hold SCL for up to 12 ms, at the edge of the ESP32 I²C timeout. The task sleeps during the conversion instead, so the bus stays free.
 - **Safe start.** The output starts off and is held off for the minimum off time, so a node stuck in a reset loop cannot switch the heating rapidly. A task that stops feeding the watchdog resets the node.
 
-## Roadmap
+## Status
 
-- HTTPS upload to a Cloudflare Worker and a live chart on a web page
+Complete. The node, its three protocol interfaces, the test suite and the enclosure are done and verified on the hardware. The project was built as a portfolio piece for an embedded building-automation role and has served that purpose.
+
+Ideas that were planned but not built, for anyone who wants to take it further:
+
+- HTTPS upload to a cloud endpoint and a live chart on a web page
 - E-paper wall panel (Soldered Inkplate) reading the retained MQTT state
-- DIN-rail enclosure with a separate sensor chamber
-- Later: BACnet/SC, OPC UA, OTA updates
+- Separate, ventilated sensor chamber, so the ESP32's own heat cannot reach the sensors
+- BACnet/SC, OPC UA, OTA updates, authentication and TLS for Modbus and MQTT
 
 ## License
 
